@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Step-by-Step Project Submission</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        /* General Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #f4f4f4;
+            padding: 20px;
+        }
+        .container {
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+        h2 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .progress-step {
+            width: 40px;
+            height: 40px;
+            background: #ddd;
+            color: #666;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            font-weight: bold;
+            position: relative;
+            z-index: 1;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+        .progress-step.active {
+            background: #4A90E2;
+            color: white;
+        }
+        .progress-line {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: calc(100% - 40px);
+            height: 4px;
+            background: #ddd;
+            z-index: 0;
+        }
+        .progress-line-fill {
+            height: 100%;
+            width: 0%;
+            background: #4A90E2;
+            transition: width 0.3s ease;
+        }
+
+        /* Form Steps */
+        .step {
+            display: none;
+        }
+        .step.active {
+            display: block;
+        }
+
+        /* Form Elements */
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+            text-align: left;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        textarea {
+            resize: none;
+            height: 60px;
+        }
+
+        /* Buttons */
+        .btn-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: 0.3s ease;
+        }
+        .btn-next {
+            background: #4A90E2;
+            color: white;
+        }
+        .btn-prev {
+            background: #ccc;
+            color: black;
+        }
+        .btn-submit {
+            background: #28a745;
+            color: white;
+            display: none;
+        }
+        .btn:hover {
+            opacity: 0.8;
+        }
+        /* Custom File Upload Container */
+        .file-upload-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 15px;
+            border: 2px dashed #4A90E2;
+            border-radius: 8px;
+            background: #f8f9fa;
+            cursor: pointer;
+            transition: 0.3s ease;
+        }
+
+        .file-upload-container:hover {
+            background: #e3f2fd;
+            border-color: #357ABD;
+        }
+
+        /* Hidden Input */
+        .file-upload-input {
+            display: none;
+        }
+
+        /* Label as Custom Button */
+        .file-upload-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #4A90E2;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .file-upload-label:hover {
+            background: #357ABD;
+        }
+
+        /* Display File Name */
+        .file-name {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #333;
+            font-style: italic;
+            text-align: center;
+        }
+
+        /* Team Members Section */
+        .team-member-group {
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+            position: relative; /* Ensures error message aligns properly */
+        }
+
+        /* Wrapper to ensure error message appears below input */
+        .input-wrapper {
+            display: flex;
+            align-items: center;
+            position: relative;
+            width: 100%;
+        }
+
+        /* Input Box */
+        .team-member-input {
+            flex: 1;
+            padding: 10px;
+            padding-right: 30px; /* Space for remove button */
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100%;
+            font-size: 14px;
+        }
+
+        .team-member-input:focus {
+            border-color: #007BFF;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+            outline: none;
+        }
+
+        .team-member-input.error {
+            border-color: red;
+            background: #ffe6e6;
+        }
+
+        /* Error message should always be below the input */
+        .error-message {
+            color: red;
+            font-size: 12px;
+            margin-top: 4px;
+            margin-left: 5px;
+        }
+
+        /* Remove ("X") Button Inside Input */
+        .btn-remove-member {
+            position: absolute;
+            right: 8px;
+            background: none;  /* Removed the red circle */
+            color: red; /* Keep X red */
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            width: auto;
+            height: auto;
+        }
+
+        .btn-remove-member:hover {
+            color: darkred;
+        }
+
+        /* Add Member Button */
+        .btn-add-member {
+            background: #007BFF;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            margin-top: 12px;
+        }
+
+        .btn-add-member:hover {
+            background: #0056b3;
+        }
+        
+        /* step 4*/
+        .step .form-group {
+            margin-bottom: 20px;
+        }
+
+        .step label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .step i {
+            margin-right: 6px;
+            color: #007bff;
+        }
+
+        .step input[type="url"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1.5px solid #ccc;
+            border-radius: 6px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .step input[type="url"]:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 6px rgba(0, 123, 255, 0.3);
+            outline: none;
+        }
+
+        @media (max-width: 600px) {
+            .step input[type="url"] {
+                font-size: 14px;
+                padding: 10px;
+            }
+        }
+
+        /* Container to position button at the bottom */
+.bottom-button-container {
+    position: fixed;
+    bottom: 20px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+}
+
+/* Remove link underline */
+.view-button-link {
+    text-decoration: none;
+}
+
+/* Button styling */
+.view-button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* Optional hover effect */
+.view-button:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Project Submission</h2>
+
+        <!-- Progress Bar -->
+        <div class="progress-container">
+            <div class="progress-step active">1</div>
+            <div class="progress-step">2</div>
+            <div class="progress-step">3</div>
+            <div class="progress-step">4</div>
+            <div class="progress-step">5</div>
+            <div class="progress-line">
+                <div class="progress-line-fill"></div>
+            </div>
+        </div>
+
+        <form id="projectForm" action="{{ url_for('student_routes.submit_project') }}" method="POST">
+            <!-- Step 1: Personal Info -->
+            <div class="step active">
+                <h3>Personal Details</h3>
+                <label>Name:</label>
+                <input type="text" name="name" required>
+
+                <label>Email:</label>
+                <input type="email" name="email" required>
+            </div>
+
+            <!-- Step 2: Project Details -->
+            <div class="step">
+                <h3>Project Details</h3>
+                <label>Project Title:</label>
+                <input type="text" name="project_title" required>
+
+                <label>Category:</label>
+                <select name="category" id="category" required onchange="toggleOtherCategory()">
+                    <option value="">Select</option>
+                    <option value="Web Dev">Web Dev</option>
+                    <option value="AI/ML">AI/ML</option>
+                    <option value="Data Science">Data Science</option>
+                    <option value="IoT">IoT</option>
+                    <option value="Other">Other</option>
+                </select>
+
+                <input type="text" name="other_category" id="other-category" placeholder="Enter custom category" style="display: none; margin-top: 10px;">
+
+                <label>Faculty:</label>
+                <select name="faculty" id="faculty-select" required>
+                    <option value="">Loading...</option>
+                </select>
+            </div>
+
+            <!-- Step 3: Team Members -->
+            <div class="step">
+                <h3>Team Members</h3>
+                <div id="team-members-container">
+                    <!-- First input (without remove button) -->
+                    <div class="team-member-group">
+                        <div class="input-wrapper">
+                            <input type="text" name="team_members[]" class="team-member-input" required oninput="validateInput(this)" placeholder="Enter team member name">
+                        </div>
+                        <span class="error-message"></span>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-add-member" onclick="addTeamMember()">+ Add Member</button>
+            </div>
+
+            <!-- Step 5: Project Links -->
+            <div class="step">
+                <h3>Project Links</h3>
+
+                <div class="form-group">
+                    <label for="github_link"><i class="fab fa-github"></i> GitHub Repository Link:</label>
+                    <input type="url" name="github_link" id="github_link" placeholder="https://github.com/your-repo" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="project_link"><i class="fas fa-link"></i> Live Project Link:</label>
+                    <input type="url" name="project_link" id="project_link" placeholder="https://your-project-link.com">
+                </div>
+            </div>
+
+            <!-- Step 5: Upload -->
+            <div class="step">
+                <div class="file-upload-container">
+                    <input type="file" name="project_file" id="file-upload" class="file-upload-input" onchange="updateFileName()">
+                    <label for="file-upload" class="file-upload-label">
+                        📂 Choose File
+                    </label>
+                    <span class="file-name">No file selected</span>
+                </div>                               
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="btn-container">
+                <button type="button" class="btn btn-prev" onclick="prevStep()">Previous</button>
+                <button type="button" class="btn btn-next" onclick="nextStep()">Next</button>
+                <button type="submit" class="btn btn-submit">Submit</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- ✅ Button that opens a new page -->
+    <div class="bottom-button-container">
+        <a href="/student/view" class="view-button-link">
+            <button class="view-button">
+                🔍 View My Projects
+            </button>
+        </a>
+    </div> 
+  
+    <script>
+        let currentStep = 0;
+        const steps = document.querySelectorAll('.step');
+        const progressSteps = document.querySelectorAll('.progress-step');
+        const progressFill = document.querySelector('.progress-line-fill');
+        const nextBtn = document.querySelector('.btn-next');
+        const prevBtn = document.querySelector('.btn-prev');
+        const submitBtn = document.querySelector('.btn-submit');
+    
+        function updateSteps() {
+            steps.forEach((step, index) => {
+                step.classList.toggle('active', index === currentStep);
+                progressSteps[index].classList.toggle('active', index <= currentStep);
+            });
+    
+            progressFill.style.width = (currentStep / (steps.length - 1)) * 100 + "%";
+    
+            prevBtn.style.display = currentStep === 0 ? 'none' : 'inline-block';
+            nextBtn.style.display = currentStep === steps.length - 1 ? 'none' : 'inline-block';
+            submitBtn.style.display = currentStep === steps.length - 1 ? 'inline-block' : 'none';
+        }
+    
+        function nextStep() {
+            if (currentStep < steps.length - 1) {
+                currentStep++;
+                updateSteps();
+            }
+        }
+    
+        function prevStep() {
+            if (currentStep > 0) {
+                currentStep--;
+                updateSteps();
+            }
+        }
+
+        function toggleOtherCategory() {
+            let categorySelect = document.getElementById("category");
+            let otherCategoryInput = document.getElementById("other-category");
+            if (categorySelect.value === "Other") {
+                otherCategoryInput.style.display = "block";
+                otherCategoryInput.required = true;
+            } else {
+                otherCategoryInput.style.display = "none";
+                otherCategoryInput.required = false;
+            }
+        }
+    
+        async function loadFaculty() {
+            try {
+                let response = await fetch("/faculty/get_faculty_names"); 
+                let data = await response.json();
+                let facultySelect = document.getElementById("faculty-select");
+                facultySelect.innerHTML = `<option value="">Select Faculty</option>`;
+                data.forEach(faculty => {
+                    let option = document.createElement("option");
+                    option.value = faculty;
+                    option.textContent = faculty;
+                    facultySelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error("Error loading faculty names:", error);
+            }
+        }
+    
+        document.addEventListener("DOMContentLoaded", () => {
+            updateSteps();
+            loadFaculty();
+        });
+
+        function updateFileName() {
+            let fileInput = document.getElementById("file-upload");
+            let fileNameDisplay = document.querySelector(".file-name");
+            fileNameDisplay.textContent = fileInput.files.length > 0 ? fileInput.files[0].name : "No file chosen";
+        }
+        
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const teamContainer = document.getElementById("team-members-container");
+            const addMemberBtn = document.querySelector(".btn-add-member");
+
+            // ✅ Function to validate an input field
+            function validateInput(input) {
+                const errorMessage = input.parentElement.nextElementSibling;
+                if (input.value.trim() === "") {
+                    input.classList.add("error");
+                    errorMessage.textContent = "Name cannot be empty!";
+                    return false;
+                } else {
+                    input.classList.remove("error");
+                    errorMessage.textContent = "";
+                    return true;
+                }
+            }
+
+            // ✅ Function to add a new team member only if the previous input is filled
+            function addTeamMember() {
+                const lastInput = document.querySelector("#team-members-container .team-member-group:last-child .team-member-input");
+
+                if (!validateInput(lastInput)) {
+                    return; // Prevent adding a new input if the last one is empty
+                }
+
+                const newMemberGroup = document.createElement("div");
+                newMemberGroup.classList.add("team-member-group");
+
+                const inputWrapper = document.createElement("div");
+                inputWrapper.classList.add("input-wrapper");
+
+                const input = document.createElement("input");
+                input.type = "text";
+                input.name = "team_members[]";
+                input.classList.add("team-member-input");
+                input.placeholder = "Enter team member name";
+                input.required = true;
+
+                const errorMessage = document.createElement("span");
+                errorMessage.classList.add("error-message");
+
+                const removeButton = document.createElement("button");
+                removeButton.innerHTML = "X";
+                removeButton.classList.add("btn-remove-member");
+                removeButton.onclick = function () {
+                    newMemberGroup.remove();
+                };
+
+                input.addEventListener("input", function () {
+                    validateInput(input);
+                });
+
+                inputWrapper.appendChild(input);
+                inputWrapper.appendChild(removeButton);
+                newMemberGroup.appendChild(inputWrapper);
+                newMemberGroup.appendChild(errorMessage);
+                teamContainer.appendChild(newMemberGroup);
+            }
+
+            // ✅ Event listener for "Add Member" button
+            addMemberBtn.addEventListener("click", addTeamMember);
+
+            // ✅ Event listener for the first input field
+            document.querySelector(".team-member-input").addEventListener("input", function () {
+                validateInput(this);
+            });
+        });
+
+        document.getElementById("toggleFormBtn").addEventListener("click", function () {
+            const form = document.getElementById("emailForm");
+            form.style.display = form.style.display === "none" ? "block" : "none";
+        });
+
+        document.querySelector("form").addEventListener("submit", (e) => {
+            e.preventDefault();
+
+            const form = document.querySelector("form");
+
+            const fileInput = document.getElementById("file-upload");
+            const file = fileInput.files[0];
+
+            // You can optionally validate only if a file is selected
+            if (file && file.size > 5 * 1024 * 1024) { // Example: limit to 5MB
+                alert("File is too large! Max 5MB allowed.");
+                return;
+            }
+
+            // ✅ Only validate other required fields
+            if (form.checkValidity()) {
+                console.log("Form is valid ✅");
+                form.submit();
+            } else {
+                console.log("Form has errors ❌");
+                form.reportValidity(); // show built-in error messages
+            }
+        });
+    </script>    
+</body>
+</html>
