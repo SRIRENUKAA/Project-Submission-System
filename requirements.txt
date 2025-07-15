@@ -4,3 +4,4 @@ Flask-JWT-Extended
 pymongo
 reportlab
 flask-mail
+gunicorn
