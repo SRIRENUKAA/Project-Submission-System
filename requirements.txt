@@ -1,0 +1,6 @@
+Flask
+Flask-PyMongo
+Flask-JWT-Extended
+pymongo
+reportlab
+flask-mail

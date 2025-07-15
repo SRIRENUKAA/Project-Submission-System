@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faculty Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: "Poppins", sans-serif;
+        }
+
+        body {
+            background: #eef2f3;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.15);
+            margin: auto;
+        }
+
+        .project-card {
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .project-info {
+            text-align: left;
+            flex: 2;
+            min-width: 300px;
+        }
+
+        .actions {
+            flex: 1;
+            min-width: 280px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn {
+            background: #007bff;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: 0.3s;
+            width: 100%;
+            text-align: center;
+        }
+
+        .btn:hover {
+            background: #0056b3;
+        }
+
+        .grade-section, .final-comments, .rating-section {
+            width: 100%;
+            text-align: left;
+            margin-top: 10px;
+        }
+
+        textarea, input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .submit-btn {
+            background: #28a745;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            cursor: pointer;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: 0.3s;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .submit-btn:hover {
+            background: #218838;
+        }
+
+        /* ⭐ Star Rating */
+        .rating-stars {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start; /* Left-aligned */
+            font-size: 16px;  /* Reduced from 25px to 16px */
+            color: gray;
+            cursor: pointer;
+            margin-top: 5px;
+            gap: 3px; /* Adjusted gap to maintain proper spacing */
+        }
+
+
+        .rating-stars i {
+            transition: color 0.3s;
+        }
+
+        /* Hover effect */
+        .rating-stars i:hover,
+        .rating-stars i.active {
+            color: gold;
+        }
+
+        .project-info {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            padding: 25px;
+            margin-top: 30px;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .project-info p {
+            margin-bottom: 15px;
+        }
+
+        .link-btn, .pdf-btn {
+            display: inline-block;
+            padding: 8px 14px;
+            background-color: #007BFF;
+            color: white;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: background-color 0.3s;
+            margin-top: 8px;
+        }
+
+        .link-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .pdf-btn {
+            background-color: #DC3545;
+        }
+
+        .pdf-btn:hover {
+            background-color: #a71d2a;
+        }
+
+        i {
+            margin-right: 6px;
+        }
+
+        .project-title {
+            font-size: 26px;
+            font-weight: 600;
+            color: #1f2d3d;
+            background: linear-gradient(to right, #f0f4ff, #e6ecff);
+            padding: 14px 24px;
+            border-left: 8px solid #007BFF;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+        }
+
+        .project-title:hover {
+            background: linear-gradient(to right, #e6ecff, #f0f4ff);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 123, 255, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <h1>📋 Faculty Dashboard - Project Reviews</h1>
+    <div class="container">
+        {% for project in projects %}
+        <div class="project-card">
+            <div class="project-info">
+                <h3 class="project-title">
+                     {{ project.get('project_title', 'Untitled Project') }}
+                </h3>                
+    <p><strong>👤 Name:</strong> {{ project.get('name', 'N/A') }}</p>
+    <p><strong>📧 Email:</strong> {{ project.get('email', 'N/A') }}</p>
+    <p><strong>🎯 Project Title:</strong> {{ project.get('project_title', 'N/A') }}</p>
+    <p><strong>📂 Category:</strong> {{ project.get('category', 'N/A') }}</p>
+    <p><strong>👨‍🏫 Faculty:</strong> {{ project.get('faculty', 'N/A') }}</p>
+    <p><strong>👥 Team Members:</strong> {{ project.get('team_members', 'N/A') }}</p>
+    
+    <p><strong>🔗 GitHub Repository:</strong>
+        {% if project.get('github_link') %}
+        <a href="{{ project.get('github_link') }}" target="_blank">
+            <i class="fa-brands fa-github"></i> View GitHub Repository
+        </a>        
+        {% else %}
+            N/A
+        {% endif %}
+    </p>
+    
+    <p><strong>🌐 Live Project Link:</strong>
+        {% if project.get('project_link') %}
+        <a href="{{ project.get('project_link') }}" target="_blank">
+            <i class="fa-solid fa-up-right-from-square"></i> Open Live Project
+        </a>        
+        {% else %}
+            N/A
+        {% endif %}
+    </p>        
+
+    <p><strong>📄 Project File (PDF):</strong>
+        <a class="btn" href="{{ url_for('faculty_routes.download_uploaded_file', project_id=project['_id']) }}">
+            <i class="fa-solid fa-file-pdf"></i> Download PDF
+        </a>
+    </p>
+</div>
+
+            <div class="actions">
+                <a class="btn" href="{{ url_for('faculty_routes.download_pdf', project_id=project['_id']) }}">
+                    <i class="fa-solid fa-file-pdf"></i> Download PDF
+                </a>
+                <form class="feedback-section" action="{{ url_for('faculty_routes.submit_feedback', project_id=project['_id']) }}" method="post">
+                    
+                    <label><strong>💡 Usability (1-10):</strong></label>
+                    <input type="number" name="usability" min="1" max="10" required>
+                    
+                    <label><strong>🚀 Scalability (1-10):</strong></label>
+                    <input type="number" name="scalability" min="1" max="10" required>
+                    
+                    <label><strong>🔐 Security Check:</strong></label>
+                    <select name="security">
+                        <option value="Secure">✔ Secure</option>
+                        <option value="Needs Improvement">⚠ Needs Improvement</option>
+                        <option value="Not Secure">❌ Not Secure</option>
+                    </select>
+
+                    <label><strong>📑 Code Documentation (1-10):</strong></label>
+                    <input type="number" name="documentation" min="1" max="10" required>
+
+                    <label><strong>🌍 Industry Relevance (1-10):</strong></label>
+                    <input type="number" name="industry_relevance" min="1" max="10" required>
+
+                    <!-- 🏆 Grade Section -->
+                    <div class="grade-section">
+                        <label><strong>🏆 Grade:</strong></label>
+                        <select name="grade">
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                            <option value="E">E</option>
+                        </select>
+                    </div>
+
+                    <!-- 📢 Final Comments -->
+                    <div class="final-comments">
+                        <label><strong>📢 Final Comments:</strong></label>
+                        <textarea name="final_comments" placeholder="Overall feedback..."></textarea>
+                    </div>
+
+                    <!-- ⭐ Rating Section -->
+                    <div class="rating-section">
+                        <label><strong>⭐ Rating:</strong></label>
+                        <div class="rating-stars">
+                            <i class="fa-solid fa-star" data-value="1"></i>
+                            <i class="fa-solid fa-star" data-value="2"></i>
+                            <i class="fa-solid fa-star" data-value="3"></i>
+                            <i class="fa-solid fa-star" data-value="4"></i>
+                            <i class="fa-solid fa-star" data-value="5"></i>
+                        </div>
+                        <input type="hidden" name="rating" id="rating-value">
+                    </div>
+
+                    <button type="submit" class="submit-btn">✅ Submit Review</button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const stars = document.querySelectorAll(".rating-stars i");
+            let selectedRating = 0;
+    
+            stars.forEach((star, index) => {
+                star.addEventListener("mouseover", function () {
+                    resetStars();
+                    highlightStars(index);
+                });
+    
+                star.addEventListener("click", function () {
+                    selectedRating = index + 1;  // Store the selected rating
+                    document.getElementById("rating-value").value = selectedRating;
+                    highlightStars(index);
+                });
+    
+                star.addEventListener("mouseout", function () {
+                    if (selectedRating === 0) {
+                        resetStars();
+                    } else {
+                        highlightStars(selectedRating - 1);
+                    }
+                });
+            });
+    
+            function highlightStars(index) {
+                for (let i = 0; i <= index; i++) {
+                    stars[i].classList.add("active");
+                }
+            }
+    
+            function resetStars() {
+                stars.forEach(star => star.classList.remove("active"));
+            }
+        });
+    </script>    
+</body>
+</html>
